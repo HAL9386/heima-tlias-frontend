@@ -1,12 +1,20 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
+// import axios from 'axios'
+import { queryAllApi } from '@/api/dept'
 
 const deptList = ref([])
 async function search() {
-  const result = await axios.get('https://m1.apifoxmock.com/m1/6270372-5964539-default/depts?apifoxApiId=291715989&apifoxToken=OO_sn0SVdz6Y48zdxRJw-')
-  if (result.data.code) {
-    deptList.value = result.data.data
+  // const result = await axios.get('https://m1.apifoxmock.com/m1/6270372-5964539-default/depts?apifoxApiId=291715989&apifoxToken=OO_sn0SVdz6Y48zdxRJw-')
+  // if (result.data.code) {
+  //   deptList.value = result.data.data
+  // } else {
+  //   console.error('获取部门列表失败')
+  // }
+
+  const result = await queryAllApi()
+  if (result.code) {
+    deptList.value = result.data
   } else {
     console.error('获取部门列表失败')
   }

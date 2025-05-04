@@ -21,7 +21,7 @@
       <el-container>
         <!-- 左侧菜单 -->
         <el-aside width="200px" class="aside">
-          <el-menu router="true"> 
+          <el-menu router> 
             <!-- 首页 -->
             <el-menu-item index="/index">
               <template #title>
