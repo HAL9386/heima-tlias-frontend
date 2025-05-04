@@ -1,26 +1,21 @@
 <script setup>
-const tableData = [
-  {
-    date: '2016-05-03',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '2016-05-02',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '2016-05-04',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '2016-05-01',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-]
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
+
+const deptList = ref([])
+async function search() {
+  const result = await axios.get('https://m1.apifoxmock.com/m1/6270372-5964539-default/depts?apifoxApiId=291715989&apifoxToken=OO_sn0SVdz6Y48zdxRJw-')
+  if (result.data.code) {
+    deptList.value = result.data.data
+  } else {
+    console.error('获取部门列表失败')
+  }
+}
+
+onMounted(() => {
+  search()
+})
+
 </script>
 
 <template>
@@ -29,7 +24,7 @@ const tableData = [
     <el-button type="primary" round>+ 新增部门</el-button>
   </div>
   <div class="container">
-    <el-table :data="tableData" border style="width: 100%">
+    <el-table :data="deptList" border style="width: 100%">
       <el-table-column type="index" label="序号" align="center" width="100"/>
       <el-table-column prop="name" label="部门名称" align="center"/>
       <el-table-column prop="address" label="最后操作时间" align="center"/>
