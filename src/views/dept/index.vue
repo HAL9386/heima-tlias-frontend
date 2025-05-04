@@ -2,7 +2,8 @@
 import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 // import axios from 'axios'
-import { queryAllApi, addApi } from '@/api/dept'
+import { queryAllApi, addApi, queryByIdApi } from '@/api/dept'
+import { updateApi } from '../../api/dept'
 
 // 表格数据
 const deptList = ref([])
@@ -12,6 +13,17 @@ async function search() {
     deptList.value = result.data
   } else {
     console.error('获取部门列表失败')
+  }
+}
+async function edit(id) {
+  formTitle.value = '编辑部门'
+  if (deptFormRef.value) {
+    deptFormRef.value.resetFields()
+  }
+  const result = await queryByIdApi(id)
+  if (result.code) {
+    dialogFormVisible.value = true
+    dept.value = result.data
   }
 }
 
@@ -37,11 +49,15 @@ const save = async () => {
       ElMessage.error('请确认部门名称合法')
       return false
     }
-    // 提交表单，调用后端接口
-    const result = await addApi(dept.value)
+    let result
+    if (dept.value.id) {
+      result = await updateApi(dept.value)
+    } else {
+      result = await addApi(dept.value)
+    }
     if (result.code) {
       // 提示信息
-      ElMessage.success('新增部门成功')
+      ElMessage.success('操作成功')
       // 关闭对话框
       dialogFormVisible.value = false
       // 重新查询数据
@@ -79,7 +95,7 @@ onMounted(() => {
       <el-table-column prop="updateTime" label="最后操作时间" align="center"/>
       <el-table-column fixed="right" label="操作" align="center">
         <template #default="scope">
-          <el-button type="primary" size="small"><el-icon><Edit /></el-icon> 编辑</el-button>
+          <el-button type="primary" size="small" @click="edit(scope.row.id)"><el-icon><Edit /></el-icon> 编辑</el-button>
           <el-button type="danger" size="small"><el-icon><Delete /></el-icon> 删除</el-button>
         </template>
       </el-table-column>
