@@ -7,13 +7,6 @@ import { queryAllApi, addApi } from '@/api/dept'
 // 表格数据
 const deptList = ref([])
 async function search() {
-  // const result = await axios.get('https://m1.apifoxmock.com/m1/6270372-5964539-default/depts?apifoxApiId=291715989&apifoxToken=OO_sn0SVdz6Y48zdxRJw-')
-  // if (result.data.code) {
-  //   deptList.value = result.data.data
-  // } else {
-  //   console.error('获取部门列表失败')
-  // }
-
   const result = await queryAllApi()
   if (result.code) {
     deptList.value = result.data
@@ -31,20 +24,32 @@ const addDept = () => {
   formTitle.value = '新增部门'
   dialogFormVisible.value = true
   dept.value = {name: ''}
+  if (deptFormRef.value) {
+    deptFormRef.value.resetFields()
+  }
 }
 // 点击确定按钮保存部门
 const save = async () => {
-  const result = await addApi(dept.value)
-  if (result.code) {
-    // 提示信息
-    ElMessage.success('新增部门成功')
-    // 关闭对话框
-    dialogFormVisible.value = false
-    // 重新查询数据
-    search()
-  } else {
-    ElMessage.error(result.msg)
-  }
+  // 表单校验
+  if (!deptFormRef.value) return
+  deptFormRef.value.validate(async (valid) => {
+    if (!valid) {
+      ElMessage.error('请确认部门名称合法')
+      return false
+    }
+    // 提交表单，调用后端接口
+    const result = await addApi(dept.value)
+    if (result.code) {
+      // 提示信息
+      ElMessage.success('新增部门成功')
+      // 关闭对话框
+      dialogFormVisible.value = false
+      // 重新查询数据
+      search()
+    } else {
+      ElMessage.error(result.msg)
+    }
+  })
 }
 
 // 表单校验
@@ -54,6 +59,7 @@ const rules = ref({
     { min: 2, max: 10, message: '长度在 2 到 10 个字符之间', trigger: 'blur' }
   ]
 })
+const deptFormRef = ref()
 
 onMounted(() => {
   search()
@@ -80,7 +86,7 @@ onMounted(() => {
     </el-table>
   </div>
   <el-dialog v-model="dialogFormVisible" :title="formTitle" width="500">
-    <el-form :model="dept" :rules="rules">
+    <el-form :model="dept" :rules="rules" ref="deptFormRef">
       <el-form-item label="部门名称：" label-width="100px" prop="name">
         <el-input v-model="dept.name" autocomplete="off" />
       </el-form-item>
