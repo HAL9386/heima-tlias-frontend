@@ -1,9 +1,8 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 // import axios from 'axios'
-import { queryAllApi, addApi, queryByIdApi } from '@/api/dept'
-import { updateApi } from '../../api/dept'
+import { queryAllApi, addApi, queryByIdApi, updateApi, deleteByIdApi } from '@/api/dept'
 
 // 表格数据
 const deptList = ref([])
@@ -77,6 +76,34 @@ const rules = ref({
 })
 const deptFormRef = ref()
 
+// 删除部门
+const delById = (id) => {
+  openDelMsgBox(id)
+}
+
+const openDelMsgBox = async (id) => {
+  ElMessageBox.confirm('是否删除该部门？',
+    '提示',
+    {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+    }
+  )
+  .then(async () => {
+    const result = await deleteByIdApi(id)
+    if (result.code) {
+      ElMessage.success('删除成功')
+      search()
+    } else {
+      ElMessage.error(result.msg)
+    }
+  })
+  .catch(() => {
+    ElMessage.info('已取消删除')
+  })
+}
+
 onMounted(() => {
   search()
 })
@@ -96,7 +123,7 @@ onMounted(() => {
       <el-table-column fixed="right" label="操作" align="center">
         <template #default="scope">
           <el-button type="primary" size="small" @click="edit(scope.row.id)"><el-icon><Edit /></el-icon> 编辑</el-button>
-          <el-button type="danger" size="small"><el-icon><Delete /></el-icon> 删除</el-button>
+          <el-button type="danger" size="small" @click="delById(scope.row.id)"><el-icon><Delete /></el-icon> 删除</el-button>
         </template>
       </el-table-column>
     </el-table>
