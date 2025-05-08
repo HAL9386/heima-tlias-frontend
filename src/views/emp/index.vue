@@ -37,8 +37,13 @@ const clear = () => {
 }
 
 watch(() => searchEmp.value.date, (newValue, oldValue) => {
-  searchEmp.value.begin = newValue[0]
-  searchEmp.value.end = newValue[1]
+  if (newValue.length === 2) {
+    searchEmp.value.begin = newValue[0]
+    searchEmp.value.end = newValue[1]
+  } else {
+    searchEmp.value.begin = ''
+    searchEmp.value.end = ''
+  }
 }) 
 
 const empList = ref([])
@@ -60,6 +65,7 @@ const handleCurrentChange = (val) => {
   <h1>员工管理</h1>
   <!-- 搜索栏 -->
   <div class="container">
+    {{ searchEmp, searchEmp.begin, searchEmp.end }}
     <el-form :inline="true" :model="searchEmp" class="demo-form-inline">
       <el-form-item label="姓名">
         <el-input v-model="searchEmp.name" placeholder="请输入员工姓名" />
@@ -120,6 +126,7 @@ const handleCurrentChange = (val) => {
       </el-table-column>
     </el-table>
   </div>
+  <!-- 分页 -->
   <div class="container">
     <el-pagination
       v-model:current-page="currentPage"
