@@ -13,14 +13,13 @@ const searchEmp = ref({
   date: [],
   begin: '',
   end: '',
-  page: '',
-  pageSize: '',
 })
 
 const search = async () => {
-  const res = await queryAllApi(searchEmp.value)
+  const res = await queryAllApi(searchEmp.value, currentPage.value, pageSize.value)
   if (res.code) {
     empList.value = res.data.rows
+    empListTotal.value = res.data.total
   } else {
     ElMessage.error(res.msg)
   }
@@ -42,36 +41,19 @@ watch(() => searchEmp.value.date, (newValue, oldValue) => {
   searchEmp.value.end = newValue[1]
 }) 
 
-const empList = ref([
-{
-        "id": 1,
-        "username": "jinyong",
-        "name": "金庸",
-        "gender": 1,
-        "image": "https://web-framework.oss-cn-hangzhou.aliyuncs.com/2022-09-02-00-27-53B.jpg",
-        "job": 2,
-        "salary": 8000,
-        "entryDate": "2015-01-01",
-        "deptId": 2,
-        "deptName": "教研部",
-        "createTime": "2022-09-01T23:06:30",
-        "updateTime": "2022-09-02T00:29:04"
-      },
-      {
-        "id": 2,
-        "username": "zhangwuji",
-        "name": "张无忌",
-        "gender": 1,
-        "image": "https://web-framework.oss-cn-hangzhou.aliyuncs.com/2022-09-02-00-27-53B.jpg",
-        "job": 2,
-        "salary": 6000,
-        "entryDate": "2015-01-01",
-        "deptId": 2,
-        "deptName": "教研部",
-        "createTime": "2022-09-01T23:06:30",
-        "updateTime": "2022-09-02T00:29:04"
-      }
-])
+const empList = ref([])
+const empListTotal = ref(0)
+const pageBackground = ref(true)
+const currentPage = ref(1)
+const pageSize = ref(10)
+const handleSizeChange = (val) => {
+  pageSize.value = val
+  search()
+}
+const handleCurrentChange = (val) => {
+  currentPage.value = val
+  search()
+}
 </script>
 
 <template>
@@ -138,11 +120,23 @@ const empList = ref([
       </el-table-column>
     </el-table>
   </div>
+  <div class="container">
+    <el-pagination
+      v-model:current-page="currentPage"
+      v-model:page-size="pageSize"
+      :page-sizes="[5, 10, 20, 30, 40, 50]"
+      :background="pageBackground"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="empListTotal"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+    />
+  </div>
 </template>
 
 <style scoped>
 .container {
-  margin: 20px 0;
+  margin: 10px 0;
 }
 .avatar {
   width: 40px;
