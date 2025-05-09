@@ -1,6 +1,6 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue'
-import { queryAllApi } from '@/api/emp'
+import { queryAllApi, addApi } from '@/api/emp'
 import { queryAllApi as queryAllDeptApi } from '@/api/dept'
 import { ElMessage, ElTableColumn } from 'element-plus'
 
@@ -113,6 +113,26 @@ const rules = ref({
   ]
 })
 const employeeFormRef = ref()
+// 新增员工
+const addEmp = () => {
+  if (employeeFormRef.value) {
+    employeeFormRef.value.resetFields()
+  }
+  dialogVisible.value = true
+  dialogTitle.value = '新增员工'
+  employee.value = {
+    username: '',
+    name: '',
+    gender: '',
+    phone: '',
+    job: '',
+    salary: '',
+    deptId: '',
+    entryDate: '',
+    image: '',
+    exprList: []
+  }
+}
 
 // 控制弹窗
 const dialogVisible = ref(false)
@@ -134,22 +154,7 @@ const beforeAvatarUpload = (rawFile) => {
   }
   return true
 }
-const addEmp = () => {
-  dialogVisible.value = true
-  dialogTitle.value = '新增员工'
-  employee.value = {
-    username: '',
-    name: '',
-    gender: '',
-    phone: '',
-    job: '',
-    salary: '',
-    deptId: '',
-    entryDate: '',
-    image: '',
-    exprList: []
-  }
-}
+// 添加员工工作经历
 const addEmpExprItem = () => {
   employee.value.exprList.push({
     begin: '',
@@ -171,6 +176,36 @@ watch(() => employee.value.exprList, (newValue, oldValue) => {
     item.end = item.exprDate[1]
   })
 }, {deep: true})
+
+// 保存员工
+const save = async () => {
+  // 表单校验
+  if (!employeeFormRef.value) { 
+    return 
+  }
+  employeeFormRef.value.validate(async (valid) => {
+    if (!valid) {
+      ElMessage.error('请确认员工信息合法')
+      return false
+    }
+    let result
+    if (employee.value.id) {
+      result = await updateApi(employee.value)
+    } else {
+      result = await addApi(employee.value)
+    }
+    if (result.code) {
+      // 提示信息
+      ElMessage.success('操作成功')
+      // 关闭对话框
+      dialogVisible.value = false
+      // 重新查询数据
+      search()
+    } else {
+      ElMessage.error(result.msg)
+    }
+  })
+}
 </script>
 
 <template>
@@ -248,7 +283,6 @@ watch(() => employee.value.exprList, (newValue, oldValue) => {
   </div>
   <!-- 新增/修改员工的对话框 -->
   <el-dialog v-model="dialogVisible" :title="dialogTitle">
-    {{ employee }}
     <el-form :model="employee" label-width="80px" :rules="rules" ref="employeeFormRef">
       <!-- 基本信息 -->
       <!-- 第一行 -->
@@ -363,7 +397,7 @@ watch(() => employee.value.exprList, (newValue, oldValue) => {
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="">保存</el-button>
+        <el-button type="primary" @click="save">保存</el-button>
       </span>
     </template>
   </el-dialog>

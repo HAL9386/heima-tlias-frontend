@@ -9,3 +9,6 @@ export const queryAllApi = (searchEmp, page, pageSize) => requset.get(`/emps
 &page=${page}
 &pageSize=${pageSize}
 `)
+
+// 新增员工
+export const addApi = (emp) => requset.post('/emps', emp)
