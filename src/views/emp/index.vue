@@ -1,11 +1,36 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue'
 import { queryAllApi } from '@/api/emp'
+import { queryAllApi as queryAllDeptApi } from '@/api/dept'
 import { ElMessage, ElTableColumn } from 'element-plus'
 
 onMounted(() => {
   search()
+  getDepts()
 })
+
+//职位列表数据
+const jobs = ref([
+  { name: '班主任', value: 1 }, 
+  { name: '讲师', value: 2 }, 
+  { name: '学工主管', value: 3 }, 
+  { name: '教研主管', value: 4 }, 
+  { name: '咨询师', value: 5 }, 
+  { name: '其他', value: 6 },
+])
+//性别列表数据
+const genders = ref([
+  { name: '男', value: 1 }, 
+  { name: '女', value: 2 },
+])
+// 部门列表数据
+const depts = ref([])
+const getDepts = async () => {
+  const res = await queryAllDeptApi()
+  if (res.code) {
+    depts.value = res.data
+  }
+}
 
 // 查询所有员工
 const searchEmp = ref({
@@ -88,11 +113,11 @@ const rules = ref({
   ]
 })
 const employeeFormRef = ref()
- 
+
 // 控制弹窗
 const dialogVisible = ref(false)
 const dialogTitle = ref('新增员工')
- 
+
 //文件上传
 // 图片上传成功后触发
 const handleAvatarSuccess = (response) => {
@@ -133,7 +158,7 @@ const addEmp = () => {
   <div class="container">
     <el-form :inline="true" :model="searchEmp" class="demo-form-inline">
       <el-form-item label="姓名">
-        <el-input v-model="searchEmp.name" placeholder="请输入员工姓名"/>
+        <el-input v-model="searchEmp.name" placeholder="请输入员工姓名" />
       </el-form-item>
       <el-form-item label="性别">
         <el-select v-model="searchEmp.gender" placeholder="请选择" style="width: 200px;">
@@ -222,8 +247,7 @@ const addEmp = () => {
         <el-col :span="12">
           <el-form-item label="性别">
             <el-select v-model="employee.gender" placeholder="请选择性别" style="width: 100%;">
-              <el-option label="男" value="1"></el-option>
-              <el-option label="女" value="2"></el-option>
+              <el-option v-for="gender in genders" :key="gender.value" :label="gender.name" :value="gender.value"></el-option>
             </el-select>
           </el-form-item>
         </el-col>
@@ -238,11 +262,7 @@ const addEmp = () => {
         <el-col :span="12">
           <el-form-item label="职位">
             <el-select v-model="employee.job" placeholder="请选择职位" style="width: 100%;">
-              <el-option label="班主任" value="1"></el-option>
-              <el-option label="讲师" value="2"></el-option>
-              <el-option label="学工主管" value="3"></el-option>
-              <el-option label="教研主管" value="4"></el-option>
-              <el-option label="咨询师" value="5"></el-option>
+              <el-option v-for="job in jobs" :key="job.value" :label="job.name" :value="job.value"></el-option>
             </el-select>
           </el-form-item>
         </el-col>
@@ -257,8 +277,7 @@ const addEmp = () => {
         <el-col :span="12">
           <el-form-item label="所属部门">
             <el-select v-model="employee.deptId" placeholder="请选择部门" style="width: 100%;">
-              <el-option label="研发部" value="1"></el-option>
-              <el-option label="市场部" value="2"></el-option>
+              <el-option v-for="dept in depts" :key="dept.id" :label="dept.name" :value="dept.id"></el-option>
             </el-select>
           </el-form-item>
         </el-col>
@@ -338,11 +357,13 @@ const addEmp = () => {
   height: 40px;
   border-radius: 90%;
 }
+
 .avatar-uploader .avatar {
   width: 78px;
   height: 78px;
   display: block;
 }
+
 .avatar-uploader .el-upload {
   border: 1px dashed var(--el-border-color);
   border-radius: 6px;
@@ -351,11 +372,11 @@ const addEmp = () => {
   overflow: hidden;
   transition: var(--el-transition-duration-fast);
 }
- 
+
 .avatar-uploader .el-upload:hover {
   border-color: var(--el-color-primary);
 }
- 
+
 .el-icon.avatar-uploader-icon {
   font-size: 28px;
   color: #8c939d;
