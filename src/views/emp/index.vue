@@ -162,8 +162,15 @@ const addEmpExprItem = () => {
 const deleteExpr = (index) => {
   employee.value.exprList.splice(index, 1)
 }
-watch(() => employee.value.exprList, (newValue) => {
-})
+watch(() => employee.value.exprList, (newValue, oldValue) => {
+  if (newValue.length <= 0) {
+    return
+  }
+  newValue.forEach((item) => {
+    item.begin = item.exprDate[0]
+    item.end = item.exprDate[1]
+  })
+}, {deep: true})
 </script>
 
 <template>
