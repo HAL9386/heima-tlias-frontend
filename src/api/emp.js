@@ -12,3 +12,6 @@ export const queryAllApi = (searchEmp, page, pageSize) => requset.get(`/emps
 
 // 新增员工
 export const addApi = (emp) => requset.post('/emps', emp)
+
+// 根据id查询员工
+export const queryByIdApi = (id) => requset.get(`/emps/${id}`)

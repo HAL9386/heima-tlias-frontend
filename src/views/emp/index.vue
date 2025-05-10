@@ -1,6 +1,6 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue'
-import { queryAllApi, addApi } from '@/api/emp'
+import { queryAllApi, addApi, queryByIdApi } from '@/api/emp'
 import { queryAllApi as queryAllDeptApi } from '@/api/dept'
 import { ElMessage, ElTableColumn } from 'element-plus'
 
@@ -41,6 +41,7 @@ const searchEmp = ref({
   end: '',
 })
 
+// 搜索栏查询按钮
 const search = async () => {
   const res = await queryAllApi(searchEmp.value, currentPage.value, pageSize.value)
   if (res.code) {
@@ -50,6 +51,7 @@ const search = async () => {
     ElMessage.error(res.msg)
   }
 }
+// 搜索栏清空按钮
 const clear = () => {
   searchEmp.value = {
     name: '',
@@ -60,6 +62,7 @@ const clear = () => {
   }
   search()
 }
+// 监听员工查询数据中的date变化，封装到begin和end中
 watch(() => searchEmp.value.date, (newValue, oldValue) => {
   if (newValue.length === 2) {
     searchEmp.value.begin = newValue[0]
@@ -98,6 +101,7 @@ const employee = ref({
   image: '',
   exprList: []
 })
+// 表单校验规则
 const rules = ref({
   username: [
     { required: true, message: '请输入员工用户名', trigger: 'blur' },
@@ -167,6 +171,7 @@ const addEmpExprItem = () => {
 const deleteExpr = (index) => {
   employee.value.exprList.splice(index, 1)
 }
+// 监听员工工作经历数据中的exprDate变化，封装到begin和end中
 watch(() => employee.value.exprList, (newValue, oldValue) => {
   if (newValue.length <= 0) {
     return
@@ -205,6 +210,24 @@ const save = async () => {
       ElMessage.error(result.msg)
     }
   })
+}
+
+// 表格中编辑员工按钮
+const editEmp = async (id) => {
+  if (employeeFormRef.value) {
+    employeeFormRef.value.resetFields()
+  }
+  dialogVisible.value = true
+  dialogTitle.value = '编辑员工'
+  const result = await queryByIdApi(id)
+  if (result.code) {
+    employee.value = result.data
+    employee.value.exprList.forEach((expr) => {
+      expr.exprDate = [expr.begin, expr.end]
+    })
+  } else {
+    ElMessage.error('获取员工信息失败')
+  }
 }
 </script>
 
@@ -265,12 +288,8 @@ const save = async () => {
       <el-table-column prop="updateTime" label="最后操作时间" align="center" />
       <el-table-column label="操作" align="center">
         <template #default="scope">
-          <el-button size="small" type="primary"><el-icon>
-              <Edit />
-            </el-icon>编辑</el-button>
-          <el-button size="small" type="danger"><el-icon>
-              <Delete />
-            </el-icon>删除</el-button>
+          <el-button size="small" type="primary" @click="editEmp(scope.row.id)"><el-icon><Edit /></el-icon>编辑</el-button>
+          <el-button size="small" type="danger" @click="delEmp(scope.row.id)"><el-icon><Delete /></el-icon>删除</el-button>
         </template>
       </el-table-column>
     </el-table>
