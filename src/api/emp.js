@@ -15,3 +15,6 @@ export const addApi = (emp) => requset.post('/emps', emp)
 
 // 根据id查询员工
 export const queryByIdApi = (id) => requset.get(`/emps/${id}`)
+
+// 修改员工
+export const updateApi = (emp) => requset.put('/emps', emp)

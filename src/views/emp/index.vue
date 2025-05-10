@@ -1,6 +1,6 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue'
-import { queryAllApi, addApi, queryByIdApi } from '@/api/emp'
+import { queryAllApi, addApi, queryByIdApi, updateApi } from '@/api/emp'
 import { queryAllApi as queryAllDeptApi } from '@/api/dept'
 import { ElMessage, ElTableColumn } from 'element-plus'
 
