@@ -18,3 +18,6 @@ export const queryByIdApi = (id) => requset.get(`/emps/${id}`)
 
 // 修改员工
 export const updateApi = (emp) => requset.put('/emps', emp)
+
+// 删除员工
+export const deleteApi = (ids) => requset.delete(`/emps?ids=${ids}`)

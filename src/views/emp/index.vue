@@ -1,8 +1,8 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue'
-import { queryAllApi, addApi, queryByIdApi, updateApi } from '@/api/emp'
+import { queryAllApi, addApi, queryByIdApi, updateApi, deleteApi } from '@/api/emp'
 import { queryAllApi as queryAllDeptApi } from '@/api/dept'
-import { ElMessage, ElTableColumn } from 'element-plus'
+import { ElMessage, ElTableColumn, ElMessageBox } from 'element-plus'
 
 onMounted(() => {
   search()
@@ -228,6 +228,29 @@ const editEmp = async (id) => {
   } else {
     ElMessage.error('获取员工信息失败')
   }
+}
+
+// 表格中删除员工按钮
+const delEmp = (id) => {
+  ElMessageBox.confirm(
+    '此操作将永久删除该员工, 是否继续?',
+    '提示',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }
+  ).then(async () => {
+    const result = await deleteApi(id)
+    if (result.code) {
+      ElMessage.success('删除成功')
+      search()
+    } else {
+      ElMessage.error(result.msg)
+    }
+  }).catch(() => {
+    ElMessage.info('已取消删除')
+  })
 }
 </script>
 
