@@ -4,9 +4,17 @@ import { queryAllApi, addApi, queryByIdApi, updateApi, deleteApi } from '@/api/e
 import { queryAllApi as queryAllDeptApi } from '@/api/dept'
 import { ElMessage, ElTableColumn, ElMessageBox } from 'element-plus'
 
+const token = ref('')
+function getToken() {
+  const loginUser = JSON.parse(localStorage.getItem('loginUser'))
+  if (loginUser) {
+    token.value = loginUser.token
+  }
+}
 onMounted(() => {
   search()
   getDepts()
+  getToken()
 })
 
 //职位列表数据
@@ -427,7 +435,7 @@ const deleteBatch = () => {
         <el-col :span="24">
           <el-form-item label="头像">
             <el-upload class="avatar-uploader" action="/api/upload" :show-file-list="false"
-              :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
+              :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload" :headers="{'token': token}">
               <img v-if="employee.image" :src="employee.image" class="avatar" />
               <el-icon v-else class="avatar-uploader-icon">
                 <Plus />
