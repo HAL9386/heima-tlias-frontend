@@ -14,4 +14,17 @@ request.interceptors.response.use(
   }
 )
 
+request.interceptors.request.use(
+  (config) => {
+    const loginUser = JSON.parse(localStorage.getItem('loginUser'))
+    if (loginUser) {
+      config.headers['token'] = loginUser.token
+    }
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  }
+)
+
 export default request
