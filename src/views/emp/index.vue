@@ -11,6 +11,7 @@ function getToken() {
     token.value = loginUser.token
   }
 }
+
 onMounted(() => {
   search()
   getDepts()
