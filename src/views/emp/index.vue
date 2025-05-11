@@ -252,6 +252,39 @@ const delEmp = (id) => {
     ElMessage.info('已取消删除')
   })
 }
+
+// 表格中选中的员工
+const selectedEmpIds = ref([])
+// 表格中复选框选中事件
+const handleTableSelectionChange = (selections) => {
+  selectedEmpIds.value = selections.map(item => item.id)
+}
+// 批量删除员工
+const deleteBatch = () => {
+  if (selectedEmpIds.value.length <= 0) {
+    ElMessage.warning('请至少选择一名员工')
+    return
+  }
+  ElMessageBox.confirm(
+    '此操作将永久删除选中的员工, 是否继续?',
+    '提示',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }
+  ).then(async () => {
+    const result = await deleteApi(selectedEmpIds.value)
+    if (result.code) {
+      ElMessage.success('删除成功')
+      search()
+    } else {
+      ElMessage.error(result.msg)
+    }
+  }).catch(() => {
+    ElMessage.info('已取消删除')
+  })
+}
 </script>
 
 <template>
@@ -283,13 +316,13 @@ const delEmp = (id) => {
     <el-button round type="primary" @click="addEmp"><el-icon>
         <Plus />
       </el-icon>新增员工</el-button>
-    <el-button round type="danger"><el-icon>
+    <el-button round type="danger" @click="deleteBatch"><el-icon>
         <Minus />
       </el-icon>批量删除</el-button>
   </div>
   <!-- 表格 -->
   <div class="container">
-    <el-table :data="empList" border style="width: 100%">
+    <el-table :data="empList" border style="width: 100%" @selection-change="handleTableSelectionChange">
       <el-table-column type="selection" align="center"></el-table-column>
       <el-table-column prop="name" label="姓名" align="center" />
       <el-table-column label="头像" width="100px" align="center">
