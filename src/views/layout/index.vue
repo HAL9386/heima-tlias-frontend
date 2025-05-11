@@ -1,5 +1,13 @@
 <script setup>
+import { ref, onMounted } from 'vue'
 
+const loginName = ref('') // 登录用户名
+onMounted(() => {
+  const loginUser = JSON.parse(localStorage.getItem('loginUser'))
+  if (loginUser) {
+    loginName.value = loginUser.name
+  }
+})
 </script>
 
 <template>
@@ -13,7 +21,7 @@
             <el-icon><EditPen /></el-icon> 修改密码 &nbsp;&nbsp;&nbsp; |  &nbsp;&nbsp;&nbsp;
           </a>
           <a href="">
-            <el-icon><SwitchButton /></el-icon> 退出登录
+            <el-icon><SwitchButton /></el-icon> 退出登录【{{ loginName }}】
           </a>
         </span>
       </el-header>
