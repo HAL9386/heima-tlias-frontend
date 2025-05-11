@@ -114,7 +114,10 @@ const rules = ref({
   phone: [
     { required: true, message: '请输入员工手机号', trigger: 'blur' },
     { pattern: /^[1][3-9][0-9]{9}$/, message: '请输入正确的手机号', trigger: 'blur' }
-  ]
+  ],
+  gender: [
+    { required: true, message: '请选择员工性别', trigger: 'blur' }
+  ],
 })
 const employeeFormRef = ref()
 // 新增员工
@@ -376,7 +379,7 @@ const deleteBatch = () => {
       <!-- 第二行 -->
       <el-row :gutter="20">
         <el-col :span="12">
-          <el-form-item label="性别">
+          <el-form-item label="性别" prop="gender">
             <el-select v-model="employee.gender" placeholder="请选择性别" style="width: 100%;">
               <el-option v-for="gender in genders" :key="gender.value" :label="gender.name" :value="gender.value"></el-option>
             </el-select>
